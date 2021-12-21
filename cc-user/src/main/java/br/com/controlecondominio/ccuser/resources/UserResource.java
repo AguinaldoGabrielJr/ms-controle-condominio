@@ -16,20 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.controlecondominio.ccuser.entities.User;
 import br.com.controlecondominio.ccuser.services.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping(value = "/users")
+@Api(value = "User")
 public class UserResource {
 
 	@Autowired
 	private UserService service;
 
+	@ApiOperation(value = "Buscar todos")
 	@GetMapping
 	public ResponseEntity<List<User>> findAll() {
 		List<User> list = service.findAll();
 		return ResponseEntity.ok(list);
 	}
 
+	@ApiOperation(value = "Buscar todos os Users por id")
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<User> findById(@PathVariable Long id) {
 
@@ -38,6 +43,7 @@ public class UserResource {
 
 	}
 
+	@ApiOperation(value = "Buscar todos os User por email")
 	@GetMapping(value = "/search")
 	public ResponseEntity<User> findByEmail(@RequestParam String email) {
 
@@ -46,6 +52,7 @@ public class UserResource {
 
 	}
 
+	@ApiOperation(value = "Salvar User")
 	@PostMapping
 	public ResponseEntity<User> save(@RequestBody User user) {
 		user = service.save(user);
