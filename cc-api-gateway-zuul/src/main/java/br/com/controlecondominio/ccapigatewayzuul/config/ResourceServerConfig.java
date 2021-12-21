@@ -27,9 +27,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	
 	private static final String[] PUBLIC = { "/cc-oauth/oauth/token" };
 	
-	private static final String[] OPERATOR = { "/cc-worker/**" };
+	private static final String[] OPERATOR = { "/cc-resident/**" };
 	
-	private static final String[] ADMIN = { "cc-user/**", "/actuator/**" , "/cc-worker/actuator/**" , "/cc-oauth/actuator/**"};
+	private static final String[] ADMIN = { "cc-resident/**" ,"cc-user/**", "/actuator/**" , "/cc-resident/actuator/**" , "/cc-oauth/actuator/**"};
 	
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
@@ -38,11 +38,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
+//		http.authorizeRequests()
+//		.antMatchers(PUBLIC).permitAll()
+//		.antMatchers(HttpMethod.GET, OPERATOR).hasAnyRole("OPERATOR", "ADMIN")
+//		.antMatchers(ADMIN).hasRole("ADMIN")
+//		.anyRequest().authenticated();
+		
 		http.authorizeRequests()
-		.antMatchers(PUBLIC).permitAll()
-		.antMatchers(HttpMethod.GET, OPERATOR).hasAnyRole("OPERATOR", "ADMIN")
-		.antMatchers(ADMIN).hasRole("ADMIN")
-		.anyRequest().authenticated();
+		.antMatchers("**").permitAll();
 		
 		http.cors().configurationSource(corsConfigurationSource());
 	}
