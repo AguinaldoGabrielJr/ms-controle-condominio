@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,28 +17,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.controlecondominio.ccresident.entities.Resident;
-import br.com.controlecondominio.ccresident.repositories.ResidentRepository;
+import br.com.controlecondominio.ccresident.services.ResidentService;
 
 @RestController
 @RequestMapping(value = "/residents")
 public class ResidentResource {
 
 	@Autowired
-	private ResidentRepository repository;
-
+	private ResidentService service;
+	
 	@GetMapping(value = "/{id}")
 	private ResponseEntity<Resident> findById(@PathVariable Long id) {
-		System.out.println(id);
-		System.out.println(repository);
-		System.out.println(repository.findById(id));
-		Resident resident = repository.findById(id).get();
+		Resident resident = service.findById(id);
 		return ResponseEntity.ok(resident);
 	}
 
 	@GetMapping
 	private ResponseEntity<List<Resident>> findAll() {
-		System.out.println(repository);
-		List<Resident> listResidents = repository.findAll();
+		List<Resident> listResidents = service.findAll();
 		return ResponseEntity.ok(listResidents);
 
 	}
@@ -50,27 +44,24 @@ public class ResidentResource {
 			@RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
 			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
 			@RequestParam(value = "direction", defaultValue = "ASC") String direction) {
-		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-		Page<Resident> findAll = repository.findAll(pageRequest);
-		return ResponseEntity.ok(findAll);
+		return ResponseEntity.ok(service.findAll(page, linesPerPage, orderBy, direction));
 	}
 
 	@PostMapping
 	private ResponseEntity<Resident> salvar(@RequestBody Resident resident) {
-		resident = repository.save(resident);
+		resident = service.save(resident);
 		return ResponseEntity.status(HttpStatus.CREATED).body(resident);
 	}
 
 	@PutMapping(value = "/{id}")
 	private ResponseEntity<Resident> edit(@RequestBody Resident resident, @PathVariable Long id) {
-		resident.setId(id);
-		resident = repository.save(resident);
+		resident = service.save(resident, id);
 		return ResponseEntity.status(HttpStatus.CREATED).body(resident);
 	}
 
 	@DeleteMapping(value = "/{id}")
 	private ResponseEntity<Void> delete(@PathVariable Long id) {
-		repository.deleteById(id);
+		service.deleteById(id);
 		return ResponseEntity.noContent().build();
 
 	}
